@@ -23,7 +23,19 @@ class TestController extends Controller
     ] );
     return back();
    }
-
+   public function edit(Staff $staff){
+    return view('edit',[
+        'staff'=> $staff
+    ]);
+   }
+   public function update(Staff $staff,Request $request){
+    $staff->update([
+        'name' => $request->name,
+        'email'=> $request->email,
+    ]);
+    return redirect()->route('test.index');
+   }
+   
    public function destroy(Staff $staff){
     $staff->delete();
     return back();

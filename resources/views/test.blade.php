@@ -50,8 +50,8 @@ tr:nth-child(even) {
     <td>{{ $staff->name }}</td>
     <td>{{ $staff->email }}</td>
      <td>
-        <a href="">Edit</a>
-        <a href="{{ route('test.destroy',$staff) }}">Delete</a>
+      <a href="{{route('test.edit',$staff) }}">Edit</a>
+      <a href="{{ route('test.destroy',$staff) }}">Delete</a>
      <td>
   </tr>
   @endforeach
