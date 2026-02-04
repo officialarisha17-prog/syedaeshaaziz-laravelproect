@@ -1,28 +1,9 @@
-<h1>Create New Account</h1>
 @extends('layouts.auth_layout')
 @section('auth-layout-content')
 <h2 class="text-center mb-4">Create New Account</h2>
 
-<form action="{{ route('register.store') }}" method="post">
-@csrf
-    <label for="">Name</label>
-    <input type="text" name="name" placeholder="Name" value="{{ old('name') }}">
-    @error('name')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-    <label for="">Email</label>
-    <input type="email" name="email" placeholder="Email" value="{{ old('email') }}">
-    @error('email')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-    <label for="">Password</label>
-    <input type="password" name="password" placeholder="Password">
-    @error('password')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-    <button type="submit">Create</button>
-</form>
-
+<form action="{{route('register.store')}}"method="POST">
+    @csrf 
     <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input type="text" name="name" id="name" class="form-control" placeholder="Name" value="{{ old('name') }}">

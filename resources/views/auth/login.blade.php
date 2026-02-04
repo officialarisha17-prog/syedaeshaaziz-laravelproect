@@ -1,4 +1,3 @@
-<h1>Login</h1>
 @extends('layouts.auth_layout')
 @section('auth-layout-content')
 <h2 class="text-center mb-4">Login</h2>
@@ -10,23 +9,9 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
 
-<form action="{{ route('auth.store') }}" method="post">
-@csrf
-   
-    <label for="">Email</label>
-    <input type="email" name="email" placeholder="Email">
-    @error('email')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-    <label for="">Password</label>
-    <input type="password" name="password" placeholder="Password">
-    @error('password')
-        <div class="alert alert-danger">{{ $message }}</div>
-    @enderror
-    <button type="submit">Login</button>
-</form>
-
-    <div class="mb-3">
+<form action="{{route('auth.store')}}"method="POST">
+    @csrf 
+<div class="mb-3">
         <label for="email" class="form-label">Email</label>
         <input type="email" name="email" id="email" class="form-control" placeholder="Email" value="{{ old('email') }}">
         @error('email')
