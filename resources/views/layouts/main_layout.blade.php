@@ -16,9 +16,12 @@
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
           @auth
-           <li class="nav-item ">
-            <a href="{{ route('users.create') }}" class="btn btn-outline-light btn-sm">Create</a>
+          
+            <li class="nav-item ">
+            <a href="{{ route('posts.index') }}" class="btn btn-outline-light btn-sm">Posts</a>
           </li>
+           <li class="nav-item ms-2">
+            <a href="{{ route('users.create') }}" class="btn btn-outline-light btn-sm">Create User</a>
           <li class="nav-item ms-2">
             <form action="{{ route('auth.logout') }}" method="post" class="d-flex">
               @csrf
