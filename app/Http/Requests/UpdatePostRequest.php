@@ -12,6 +12,7 @@ class UpdatePostRequest extends FormRequest
     public function authorize(): bool
     {
         return false;
+        return ture;
     }
 
     /**
@@ -22,7 +23,8 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|min:3|max:255',
+            'content' => 'required|string|min:3|max:65535',
         ];
     }
 }

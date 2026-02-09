@@ -24,7 +24,6 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
-
         {{-- Slug --}}
         <div class="mb-3">
             <label for="slug">Slug</label>
@@ -40,6 +39,7 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
+        
 
         {{-- Content --}}
         <div class="mb-3">

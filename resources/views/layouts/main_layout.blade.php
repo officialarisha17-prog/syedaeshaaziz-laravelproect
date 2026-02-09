@@ -13,6 +13,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
     <div class="container">
       <a class="navbar-brand" href="{{ url('/') }}">MyApp</a>
+      <a class="navbar-brand"> - Login as: {{ auth()->user()->name }}</a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-auto">
           @auth
