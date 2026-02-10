@@ -11,8 +11,8 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
-        return ture;
+        
+        return true;
     }
 
     /**

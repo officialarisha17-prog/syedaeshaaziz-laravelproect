@@ -23,22 +23,7 @@
             @error('title')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
-        </div>
-        {{-- Slug --}}
-        <div class="mb-3">
-            <label for="slug">Slug</label>
-            <input 
-                type="text"
-                name="slug"
-                id="slug"
-                value="{{ old('slug') }}"
-                class="form-control"
-                placeholder="enter-post-slug"
-            >
-            @error('slug')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
+        
         
 
         {{-- Content --}}
