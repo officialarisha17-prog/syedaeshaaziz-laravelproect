@@ -17,11 +17,13 @@ class Post extends Model
         static::creating(function ($post) {
             $post->slug = self::generateUniqueSlug($post->title);
             $post->user_id = auth()->id();
+            $post->guard_used = auth()->getDefultDriver();
         });
 
         static::updating(function ($post) {
             if ($post->isDirty('title')) {
                 $post->slug = self::generateUniqueSlug($post->title);
+                $post->guard_used = auth()->getDefaultDriver();
             }
         });
     }

@@ -26,6 +26,7 @@
                 <th>Title</th>
                 <th>Slug</th>
                 <th>Author</th>
+                <th>Guard</th>
                 <th>Created At</th>
                 <th width="180">Actions</th>
             </tr>
@@ -38,6 +39,7 @@
                     <td>{{ $post->title }}</td>
                     <td>{{ $post->slug }}</td>
                     <td>{{ $post->user->name ?? 'N/A' }}</td>
+                    <td>{{ $post->guard_used ?? 'N/A' }}</td>
                     <td>{{ $post->created_at->format('d M Y') }}</td>
                     <td>
                       
