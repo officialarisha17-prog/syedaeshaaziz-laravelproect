@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            //
+             $table->enum('guard_used', ['web', 'sanctum'])
+                  ->default('web')
+                  ->after('content');
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            //
+            $table->dropColumn('guard_used');
         });
     }
 };

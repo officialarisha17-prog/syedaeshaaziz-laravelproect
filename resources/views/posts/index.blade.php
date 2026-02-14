@@ -32,7 +32,7 @@
             </tr>
         </thead>
 
-        <tbody>
+        <!-- <tbody> -->
             @forelse($posts as $post)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
@@ -72,12 +72,107 @@
                     </td>
                 </tr>
             @endforelse
+        <!-- </tbody>
+        <tbody id="postsTableBody"> -->
         </tbody>
     </table>
 
     {{-- Pagination --}}
-    <div class="mt-3">
+      <!-- <div class="mt-3"> -->
         {{ $posts->links() }}
     </div>
+    <div class="mt-3" id="paginationLinks"></div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+
+        fetchPosts();
+
+        function fetchPosts(page = 1) {
+            $.ajax({
+                url: "/api/posts?page=" + page,
+                type: "GET",
+                success: function (response) {
+
+                    let rows = '';
+                    let index = (response.current_page - 1) * response.per_page;
+
+                    if(response.data.length > 0){
+                        $.each(response.data, function (key, post) {
+                            index++;
+
+                            rows += `
+                                <tr>
+                                    <td>${index}</td>
+                                    <td>${post.title}</td>
+                                    <td>${post.slug}</td>
+                                    <td>${post.user ? post.user.name : 'N/A'}</td>
+                                    <td>${post.guard_used ?? 'N/A'}</td>
+                                    <td>${formatDate(post.created_at)}</td>
+                                    <td>
+                                        <a href="/posts/${post.id}/edit" 
+                                        class="btn btn-sm btn-warning">
+                                        Edit
+                                        </a>
+
+                                        <button 
+                                            class="btn btn-sm btn-danger deletePost"
+                                            data-id="${post.id}">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        rows = `
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    No posts found.
+                                </td>
+                            </tr>
+                        `;
+                    }
+
+                    $("#postsTableBody").html(rows);
+
+                    buildPagination(response);
+                }
+            });
+        }
+
+        function buildPagination(response) {
+            let pagination = '';
+
+            for(let i = 1; i <= response.last_page; i++){
+                pagination += `
+                    <button class="btn btn-sm ${i == response.current_page ? 'btn-primary' : 'btn-outline-primary'} page-btn"
+                            data-page="${i}">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            $("#paginationLinks").html(pagination);
+        }
+
+        $(document).on("click", ".page-btn", function(){
+            let page = $(this).data("page");
+            fetchPosts(page);
+        });
+
+        function formatDate(dateString) {
+            let date = new Date(dateString);
+            return date.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+    });
+</script>
+@endpush

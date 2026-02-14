@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class PostController extends Controller
 {
-    use AuthorizesRequests; 
+      use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -36,9 +35,7 @@ class PostController extends Controller
     {
         $post = Post::create([
             'title' => $request->title,
-            'slug' => $request->slug,
-            'content' => $request->content,
-            'user_id' => auth()->id()
+            'content' => $request->content
         ]);
         
         return redirect()->route('posts.index')->with('success', 'Post created successfully');
@@ -55,10 +52,10 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Post $post)
+   public function edit(Post $post)
     {
-        return view('posts.edit',[
-            'post'=>$post
+        return view('posts.edit', [
+            'post' => $post
         ]);
     }
 
@@ -68,23 +65,26 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, Post $post)
     {
         $this->authorize('update', $post);
-        $post-> update([
-            'title'=>$request->title,
-            'content'=>$request->content,
+        $post->update([
+            'title'   => $request->title,
+            'content' => $request->content,
         ]);
-        return redirect()->route('posts.index')->with('success','Post updated successfully!');
+
+        return redirect()->route('posts.index')
+            ->with('success', 'Post updated successfully!');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Post $post)
     {
-        $this->authorize('delete',$post);
+        $this->authorize('delete', $post);
         $post->delete();
 
-        return redirect()->route('posts.index')->with('success','post deleted successfully!');
+        return redirect()->route('posts.index')
+            ->with('success', 'Post deleted successfully!');
     }
-
 
 }

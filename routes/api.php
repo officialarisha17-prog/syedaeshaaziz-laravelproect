@@ -73,3 +73,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         ]);
     });
 });
+Route::get('posts',function(){
+        return  Post::with('user')->latest()->paginate(10);
+    });

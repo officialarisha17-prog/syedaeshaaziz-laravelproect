@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,13 +16,13 @@ class Post extends Model
         static::creating(function ($post) {
             $post->slug = self::generateUniqueSlug($post->title);
             $post->user_id = auth()->id();
-            $post->guard_used = auth()->getDefultDriver();
+            $post->guard_used = auth()->getDefaultDriver(); 
         });
 
         static::updating(function ($post) {
             if ($post->isDirty('title')) {
                 $post->slug = self::generateUniqueSlug($post->title);
-                $post->guard_used = auth()->getDefaultDriver();
+               $post->guard_used = auth()->getDefaultDriver(); 
             }
         });
     }
@@ -44,4 +43,5 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
 }
