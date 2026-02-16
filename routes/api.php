@@ -3,76 +3,121 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
-
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
-
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 Route::get('/user', function (Request $request) {
-    return $request->user();
+return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('posts', function () {
-    $posts = Post::with('user')->latest()->paginate(10);
-    return json_encode($posts);
-});
-
 // Login API
-Route::post('/login', function (Request $request) {
+Route::middleware(['web'])->post('/login', function (Request $request) {
+// $request->validate([
+//     'email' => 'required|email',
+//     'password' => 'required'
+// ]);
 
-    $request->validate([
+    $validator = Validator::make($request->all(), [
         'email' => 'required|email',
         'password' => 'required'
     ]);
 
-    if (auth()->attempt([
-        'email' => $request->email,
-        'password' => $request->password
-    ])) {
-        return json_encode([
-            'success' => true,
-            "message" => "You are logged in",
-            'data' => [
-                'user' => auth()->user(),
-                'token' => auth()->user()->createToken('auth_token')->plainTextToken
-            ]
-        ]);
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation errors',
+            'errors' => $validator->errors()
+        ], 422);
     }
 
-    return json_encode([
-        'success' => false,
-        "message" => "Invalid credentials",
-    ]);
+    if(auth()->attempt(['email' => $request->email,'password' => $request->password])){
+        $request->session()->regenerate(); 
+            return response()->json([
+                'success' => true,
+                "message" => "You are logged in",
+                'data' => [
+                    'user' => auth()->user(),
+                    'token' => auth()->user()->createToken('auth_token')->plainTextToken
+                ],
+                'page' => route('users.index')
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            "message" => "Invalid credentials"
+        ],401);
+
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
-    Route::get('posts', function () {
-        $posts = Post::with('user')->latest()->paginate(10);
-        return json_encode($posts);
-    });
-
-    Route::post('posts', function (Request $request) {
-
+    Route::post('posts',function(StorePostRequest $request){
         $post = Post::create([
             'title' => $request->title,
             'content' => $request->content
         ]);
-
-        if ($post) {
-            return json_encode([
+        if($post){
+            return response()->json([
                 'success' => true,
                 "message" => "Post created successfully",
+                'data' => $post,
+                'page' => route('posts.index')
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            "message" => "Something went wrong",
+        ], 422);
+    });
+
+    Route::put('posts/{post}',function(UpdatePostRequest $request, Post $post){
+        if(!$post){
+            return response()->json([
+                'success' => false,
+                "message" => "Post not found",
+            ], 404);
+        }
+        $post->title = $request->title;
+        $post->content = $request->content;
+        if($post->save()){
+            return response()->json([
+                'success' => true,
+                "message" => "Post updated successfully",
                 'data' => $post
             ]);
         }
-
-        return json_encode([
+        return response()->json([
             'success' => false,
             "message" => "Something went wrong",
-        ]);
+        ], 422);
     });
+
+    
+    Route::get('posts',function(){
+            return  Post::with('user')->latest()->paginate(10);
+    });
+
+    Route::delete('posts/{post}',function(Post $post){
+        if(!$post){
+            return response()->json([
+                'success' => false,
+                "message" => "Post not found",
+            ], 404);
+        }
+        if($post->delete()){
+            return response()->json([
+                'success' => true,
+                "message" => "Post deleted successfully",
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            "message" => "Something went wrong",
+        ], 422);
 });
-Route::get('posts',function(){
+});
+
+
+ Route::get('posts',function(){
         return  Post::with('user')->latest()->paginate(10);
     });

@@ -17,6 +17,7 @@
             {{ session('success') }}
         </div>
     @endif
+    <div class="alert alert-success d-none" id="successMessage"></div>
 
     {{-- Posts Table --}}
     <table class="table table-bordered table-striped">
@@ -32,7 +33,7 @@
             </tr>
         </thead>
 
-        <!-- <tbody> -->
+        <!-- <tbody>
             @forelse($posts as $post)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
@@ -72,16 +73,49 @@
                     </td>
                 </tr>
             @endforelse
-        <!-- </tbody>
-        <tbody id="postsTableBody"> -->
+        </tbody> -->
+        <tbody id="postsTableBody">
         </tbody>
     </table>
 
     {{-- Pagination --}}
-      <!-- <div class="mt-3"> -->
+      <!-- <div class="mt-3">
         {{ $posts->links() }}
-    </div>
+    </div> -->
     <div class="mt-3" id="paginationLinks"></div>
+
+    <!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete this post?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button" 
+                        class="btn btn-danger" 
+                        id="confirmDeleteBtn">
+                    Yes, Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 </div>
 @endsection
 
@@ -95,6 +129,9 @@
             $.ajax({
                 url: "/api/posts?page=" + page,
                 type: "GET",
+                headers: {
+                    "Authorization": "Bearer " + "{{ auth()->user()->createToken('auth_token')->plainTextToken }}"
+                },
                 success: function (response) {
 
                     let rows = '';
@@ -172,6 +209,37 @@
                 year: 'numeric'
             });
         }
+let deletePostId = null;
+      $(document).on("click", ".deletePost", function () {
+            deletePostId = $(this).data("id");
+
+            let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        });
+
+    $("#confirmDeleteBtn").on("click", function () {
+
+            if (!deletePostId) return;
+
+            $.ajax({
+                url: "/api/posts/" + deletePostId,
+                type: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + "{{ auth()->user()->createToken('auth_token')->plainTextToken }}"
+                },
+                success: function (response) {
+
+                    let modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                    modal.hide();
+
+                    $('#successMessage')
+                        .removeClass('d-none')
+                        .text(response.message);
+
+                    fetchPosts();
+                }
+            });
+        });
 
     });
 </script>

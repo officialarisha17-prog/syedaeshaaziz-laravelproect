@@ -27,4 +27,5 @@ class UpdatePostRequest extends FormRequest
             'content' => 'required|string|min:3|max:65535',
         ];
     }
+    
 }
