@@ -1,17 +1,16 @@
 @extends('layouts.main_layout')
+
+@section('title', 'User List')
+
 @section('content')
   @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-@if(session('success'))
-    <div>
-        {{ session('success') }}
-    </div>
-@endif
+  <div class="card shadow-sm">
+    <!-- <div class="card-body">
+      <h2 class="card-title mb-4">Users</h2>
 
-
-</table>
       <table class="table table-striped table-bordered">
         <thead class="table-primary">
           <tr>
@@ -39,6 +38,7 @@
           @endforeach
         </tbody>
       </table>
-    </div>
+    </div> -->
+    @livewire('users')
   </div>
 @endsection
