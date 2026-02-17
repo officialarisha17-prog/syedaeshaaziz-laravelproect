@@ -6,6 +6,8 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+
+
 Route::get('/user', function (Request $request) {
 return $request->user();
 })->middleware('auth:sanctum');

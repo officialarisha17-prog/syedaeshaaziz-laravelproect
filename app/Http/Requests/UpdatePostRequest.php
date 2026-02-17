@@ -27,5 +27,14 @@ class UpdatePostRequest extends FormRequest
             'content' => 'required|string|min:3|max:65535',
         ];
     }
-    
+     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        $response = response()->json([
+            'success' => false,
+            'message' => 'Validation errors',
+            'errors' => $validator->errors()
+        ], 422);
+
+        throw new \Illuminate\Validation\ValidationException($validator, $response);
+    }
 }
