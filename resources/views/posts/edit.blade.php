@@ -44,7 +44,6 @@
             <!-- @error('content')
                 <div class="text-danger">{{ $message }}</div>
             @enderror -->
-            >{{ $post->content }}</textarea>
             <div class="text-danger mt-1 d-none" id="contentError"></div>
         </div>
 
@@ -92,7 +91,7 @@ $(document).ready(function() {
                 content: content
             },
             headers: {
-                "Authorization": "Bearer"+ " {{ auth()->user()->createToken('auth_token')->plainTextToken }}"
+                "Authorization": "Bearer" + " {{ auth()->user()->createToken('auth_token')->plainTextToken }}"
             },
             success: function(response) {
 

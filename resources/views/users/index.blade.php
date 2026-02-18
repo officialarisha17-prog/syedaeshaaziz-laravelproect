@@ -3,9 +3,9 @@
 @section('title', 'User List')
 
 @section('content')
-  @if(session('success'))
+  <!-- @if(session('success'))
       <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
+  @endif -->
 
   <div class="card shadow-sm">
     <!-- <div class="card-body">
