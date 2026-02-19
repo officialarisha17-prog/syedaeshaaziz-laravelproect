@@ -25,6 +25,7 @@ class UpdatePostRequest extends FormRequest
         return [
             'title' => 'required|string|min:3|max:255',
             'content' => 'required|string|min:3|max:65535',
+            'image' => 'nullable|image|max:2048',
         ];
     }
      protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)

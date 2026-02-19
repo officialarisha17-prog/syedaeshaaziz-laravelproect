@@ -161,7 +161,13 @@
                                             Delete
                                         </button>
                                     </td>
+                                    <td>
+                                        ${post.media.length > 0
+                                        ? `<img src="${post.media[0].original_url}" width="60" height="60" style="object-fit:cover;">`
+                                        : 'No Image'}
+                                    </td>
                                 </tr>
+                                
                             `;
                         });
                     } else {

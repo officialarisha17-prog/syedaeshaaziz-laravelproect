@@ -5,10 +5,13 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;;
+
+class Post extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
-    use HasFactory;
+    use HasFactory, InteractWithMedia;
 
     protected $fillable = ['title','content','user_id'];
     protected static function booted()
@@ -37,6 +40,11 @@ class Post extends Model
         }
 
         return $slug;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('post_image')->singleFile();
     }
 
     public function user()

@@ -58,6 +58,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             'title' => $request->title,
             'content' => $request->content
         ]);
+        if ($request->hasFile('image')) {
+        $post->addMediaFromRequest('image')
+             ->toMediaCollection('post_image');
+    }
+
         if($post){
             return response()->json([
                 'success' => true,
@@ -81,6 +86,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         }
         $post->title = $request->title;
         $post->content = $request->content;
+
+        if ($request->hasFile('image')) {
+
+    $post->clearMediaCollection('post_image');
+
+    $post->addMediaFromRequest('image')
+         ->toMediaCollection('post_image');
+}
+
         if($post->save()){
             return response()->json([
                 'success' => true,
@@ -96,7 +110,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     
     Route::get('posts',function(){
-            return  Post::with('user')->latest()->paginate(10);
+            return  Post::with('user','media')->latest()->paginate(10);
     });
 
     Route::delete('posts/{post}',function(Post $post){

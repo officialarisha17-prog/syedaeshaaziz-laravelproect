@@ -7,9 +7,10 @@
     <h1>Create New Post</h1>
 
     <div class="alert alert-success d-none" id="successMessage"></div>
-<div class="alert alert-danger d-none" id="errorMessage"></div>
-    <!-- <form action="{{ route('posts.store') }}" method="POST"> -->
-        <form id= "postForm">
+    <div class="alert alert-danger d-none" id="errorMessage"></div>
+
+    <!-- <form id="postForm"> -->
+    <form id="postForm" enctype="multipart/form-data">
         @csrf
 
         {{-- Title --}}
@@ -19,16 +20,11 @@
                 type="text"
                 name="title"
                 id="title"
-                value="{{ old('title') }}"
                 class="form-control"
                 placeholder="Enter post title"
             >
-            <!-- @error('title')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror -->
             <div class="text-danger mt-1 d-none" id="titleError"></div>
-</div>
-        
+        </div>
 
         {{-- Content --}}
         <div class="mb-3">
@@ -39,14 +35,22 @@
                 rows="6"
                 class="form-control"
                 placeholder="Write your post content..."
-            >{{ old('content') }}</textarea>
-            <!-- @error('content')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror -->
+            ></textarea>
             <div class="text-danger mt-1 d-none" id="contentError"></div>
         </div>
 
-        {{-- Submit --}}
+        {{-- Image Field Added --}}
+        <div class="mb-3">
+            <label for="image">Post Image</label>
+            <input 
+                type="file"
+                name="image"
+                id="image"
+                class="form-control"
+            >
+            <div class="text-danger mt-1 d-none" id="imageError"></div>
+        </div>
+
         <button type="submit" id="postBtn" class="btn btn-primary">
             Create Post
         </button>
@@ -54,83 +58,81 @@
 </div>
 @endsection
 
+
 @push('scripts')
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
 
-        $('#postForm').on('submit', function(e) {
-            e.preventDefault(); // stop reload
+    $('#postForm').on('submit', function(e) {
+        e.preventDefault();
 
-            let title = $('#title').val();
-            let content = $('#content').val();
-            let token = $('input[name="_token"]').val();
-            let postBtn = $('#postBtn'); 
-            postBtn.prop('disabled', true).text('Creating Post...');
-            let successMessage = $('#successMessage');
-            let errorMessage = $('#errorMessage');
+        let postBtn = $('#postBtn');
+        postBtn.prop('disabled', true).text('Creating Post...');
 
-            let titleError = $('#titleError'); 
-            let contentError = $('#contentError');
+        let successMessage = $('#successMessage');
+        let errorMessage = $('#errorMessage');
+        let formData = new FormData(this);
+        let titleError = $('#titleError');
+        let contentError = $('#contentError');
+        let imageError = $('#imageError');
 
-            $.ajax({
-                url: "/api/posts",
-                type: "POST",
-                data: {
-                    _token: token,
-                    title: title,
-                    content: content
-                },
-                headers: {
-                    "Authorization": "Bearer " + "{{ auth()->user()->createToken('auth_token')->plainTextToken }}"
-                },
-                success: function(response) {
-                   
+        $.ajax({
+            url: "/api/posts",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                "Authorization": "Bearer " + "{{ auth()->user()->createToken('auth_token')->plainTextToken }}"
+            },
+            success: function(response) {
 
-                    if (response.success) {
-                        // Show success message
-                        successMessage.removeClass('d-none').text(response.message);
-                        // clear form
-                        $('#title').val('');
-                        $('#content').val('');
+                if (response.success) {
+                    successMessage.removeClass('d-none')
+                                  .text(response.message);
 
-                        window.location.href = response.page;
+                    $('#postForm')[0].reset();
 
-                    } else {
-                        errorMessage.removeClass('d-none').text(response.message);
-                    }
-                    postBtn.prop('disabled', false).text('Create Post');
-                },
-                error: function(xhr) {
-
-                 if(xhr.responseJSON.errors) { 
-                        if(xhr.responseJSON.errors.title) {
-                             titleError.removeClass('d-none').text(xhr.responseJSON.errors.title[0]); 
-                        } 
-                        else { 
-                            titleError.addClass('d-none').text('');
-                        } 
-                        if(xhr.responseJSON.errors.content) {
-                            contentError.removeClass('d-none').text(xhr.responseJSON.errors.content[0]); 
-                        } 
-                        else { 
-                            contentError.addClass('d-none').text(''); 
-                        }
-                    } else { 
-                            titleError.addClass('d-none').text('');
-                            contentError.addClass('d-none').text(''); 
-                    }
-
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        console.log(errors);
-                    } else if (xhr.status === 401) {
-                        errorMessage.removeClass('d-none').text(xhr.responseJSON.message);
-                    }
-                    postBtn.prop('disabled', false).text('Create Post');
+                    window.location.href = response.page;
+                } else {
+                    errorMessage.removeClass('d-none')
+                                .text(response.message);
                 }
-            });
+
+                postBtn.prop('disabled', false).text('Create Post');
+            },
+            error: function(xhr) {
+
+                if(xhr.responseJSON.errors) {
+
+                    if(xhr.responseJSON.errors.title) {
+                        titleError.removeClass('d-none')
+                                  .text(xhr.responseJSON.errors.title[0]);
+                    } else {
+                        titleError.addClass('d-none').text('');
+                    }
+
+                    if(xhr.responseJSON.errors.content) {
+                        contentError.removeClass('d-none')
+                                    .text(xhr.responseJSON.errors.content[0]);
+                    } else {
+                        contentError.addClass('d-none').text('');
+                    }
+
+                    if(xhr.responseJSON.errors.image) {
+                        imageError.removeClass('d-none')
+                                  .text(xhr.responseJSON.errors.image[0]);
+                    } else {
+                        imageError.addClass('d-none').text('');
+                    }
+                }
+
+                postBtn.prop('disabled', false).text('Create Post');
+            }
         });
 
     });
+
+});
 </script>
 @endpush
