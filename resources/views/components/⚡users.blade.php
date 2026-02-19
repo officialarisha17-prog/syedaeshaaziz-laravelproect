@@ -3,23 +3,26 @@
 use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Livewire\WithFileUploads;
 new class extends Component
 {
-    
+     use WithFileUploads;
     public $users;
     public $name;
     public $email;
     public $password;
+    public $image;
     public $isCreating = false;
     public $isEditing = false;
     public $user_id;
 
-     protected function rules()
+      protected function rules()
     {
         return [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $this->user_id,
             'password' => $this->isEditing ? 'nullable|min:6|max:255' : 'required|min:6|max:255',
+             'image' => $this->isCreating || $this->isEditing ? 'nullable|image|max:2048' : '',
         ];
     }
     public function resetInput()
@@ -27,6 +30,7 @@ new class extends Component
         $this->name = null;
         $this->email = null;
         $this->password = null;
+        $this->image = null;
     }
     public function mount()
     {
@@ -52,11 +56,16 @@ new class extends Component
     {
         $this->validate();
 
-        User::create([
+         $user = User::create([
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
         ]);
+        if ($this->image) {
+            $user->addMedia($this->image->getRealPath())
+                ->usingName($this->image->getClientOriginalName())
+                ->toMediaCollection('users');
+        }
 
         session()->flash('success', 'User created successfully');
         $this->resetInput();
@@ -81,10 +90,19 @@ new class extends Component
         $user = User::find($this->user_id);
         $user->name = $this->name;
         $user->email = $this->email;
+        if ($this->password) {
+        $user->password = Hash::make($this->password);
+    }
         $user->save();
+        if ($this->image) {
+        $user->clearMediaCollection('users');
+        $user->addMedia($this->image->getRealPath())
+             ->toMediaCollection('users');
+    }
 
         session()->flash('success', 'User updated successfully');
         $this->resetInput();
+        $this->image = null;
         $this->isEditing = false;
     }
 };
@@ -115,7 +133,21 @@ new class extends Component
                         @error('password') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 @endif
-                
+
+                <div class="mb-3">
+                    <input type="file" wire:model="image" class="form-control">
+                    @error('image') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Upload Progress -->
+                <div wire:loading wire:target="image" class="text-primary">
+                    Uploading...
+                </div>
+
+                <!-- Preview -->
+                @if ($image)
+                    <img src="{{ $image->temporaryUrl() }}" class="mt-2" width="100">
+                @endif
 
                     <button class="btn btn-primary">
                         {{ $isEditing ? 'Update' : 'Create' }}
@@ -136,6 +168,7 @@ new class extends Component
                             <th>ID</th>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Avatar</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -146,6 +179,15 @@ new class extends Component
                             <td>{{ $user->id }}</td>
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
+                            <td>
+                                @if($user->getFirstMediaUrl('users'))
+                                    <img src="{{ $user->getFirstMediaUrl('users') }}" 
+                                        width="50" height="50" 
+                                        style="object-fit:cover;border-radius:50%;">
+                                @else
+                                    <span>No Image</span>
+                                @endif
+                            </td>
                             <td>
                                 <button wire:click="edit({{ $user }})" class="btn btn-warning btn-sm">
                                     Edit
