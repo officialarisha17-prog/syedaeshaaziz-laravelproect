@@ -29,6 +29,7 @@
                 <th>Author</th>
                 <th>Guard</th>
                 <th>Created At</th>
+                 <th>Image</th>
                 <th width="180">Actions</th>
             </tr>
         </thead>
@@ -150,6 +151,11 @@
                                     <td>${post.guard_used ?? 'N/A'}</td>
                                     <td>${formatDate(post.created_at)}</td>
                                     <td>
+                                        ${post.media.length > 0
+                                        ? `<img src="${post.media[0].original_url}" width="60" height="60" style="object-fit:cover;">`
+                                        : 'No Image'}
+                                    </td>
+                                    <td>
                                         <a href="/posts/${post.id}/edit" 
                                         class="btn btn-sm btn-warning">
                                         Edit
@@ -161,11 +167,7 @@
                                             Delete
                                         </button>
                                     </td>
-                                    <td>
-                                        ${post.media.length > 0
-                                        ? `<img src="${post.media[0].original_url}" width="60" height="60" style="object-fit:cover;">`
-                                        : 'No Image'}
-                                    </td>
+                                    
                                 </tr>
                                 
                             `;

@@ -108,11 +108,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         ], 422);
     });
 
-    
-    Route::get('posts',function(){
-            return  Post::with('user','media')->latest()->paginate(10);
-    });
-
     Route::delete('posts/{post}',function(Post $post){
         if(!$post){
             return response()->json([
@@ -134,6 +129,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 
- Route::get('posts',function(){
-        return  Post::with('user')->latest()->paginate(10);
-    });
+ Route::get('posts', function () {
+    return Post::with(['user','media'])->latest()->paginate(10);
+});
